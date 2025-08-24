@@ -1,13 +1,21 @@
-# Utiliser l'image officielle nginx
-FROM nginx:alpine
+FROM node:16-alpine as frontend-build
+WORKDIR /app/frontend
+COPY frontend/package*.json ./
+RUN npm ci
+COPY frontend/ .
+RUN npm run build
 
-# Copier les fichiers static du frontend
-COPY frontend/build /usr/share/nginx/html
+FROM node:16-alpine as backend-build
+WORKDIR /app/backend
+COPY backend/package*.json ./
+RUN npm ci --production
+COPY backend/ .
 
-# Copier la configuration nginx pour Render
-COPY nginx/nginx-render.conf /etc/nginx/nginx.conf
+FROM node:16-alpine
+WORKDIR /app
+COPY --from=frontend-build /app/frontend/build ./frontend/build
+COPY --from=backend-build /app/backend ./backend
 
-# Exposer le port 80 (Render utilise le port 10000)
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+WORKDIR /app/backend
+EXPOSE 5000
+CMD ["npm", "start"]

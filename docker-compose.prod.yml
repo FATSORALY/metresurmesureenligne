@@ -1,70 +1,56 @@
 version: '3.8'
 
 services:
-  # Base de données
-  postgres:
-    image: postgis/postgis:15-3.3
+  # Frontend React - Service Web
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.render
     environment:
-      POSTGRES_DB: metresurmesure
-      POSTGRES_USER: metresuser
-      POSTGRES_PASSWORD: metrespwd
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - NODE_ENV=production
+      - REACT_APP_API_URL=https://metresurmesureenligne.onrender.com/api
+    ports:
+      - "3000:3000"
     networks:
       - app-network
     restart: unless-stopped
-    # Exposer uniquement en interne, pas besoin d'exposer sur l'hôte
-    # ports: 
-    #   - "5432:5432"
 
-  # Backend
-  backend:
-    build: 
+  # Backend Node.js - Service API
+  api:
+    build:
       context: ./backend
-      dockerfile: Dockerfile.prod
+      dockerfile: Dockerfile.render
     environment:
       - NODE_ENV=production
       - DB_HOST=postgres
       - DB_PORT=5432
       - DB_NAME=metresurmesure
       - DB_USER=metresuser
-      - DB_PASSWORD=metrespwd
+      - DB_PASSWORD=mpbw idqt fnbt wwbaz
       - JWT_SECRET=02a1cc8cfba732c5df138a76f718c2c5685994399a0d735c0f45ff0a441bd0abfc2fe67d133c2562733e2b2a622e2bea03c12bef3d133f0de53a2843fcdf9a72
-      - FRONTEND_URL=https://metresurmesureenligne.onrender.com/
+      - FRONTEND_URL=https://metresurmesureenligne.onrender.com
+      - STRIPE_SECRET_KEY=sk_live_votre_clé_stripe_production
+      - EMAIL_SERVICE=gmail
+      - EMAIL_USER=arvelandrianantoandro@gmail.com
+      - EMAIL_PASS=mpbw idqt fnbt wwba
+    ports:
+      - "5000:5000"
     depends_on:
       - postgres
     networks:
       - app-network
     restart: unless-stopped
-    # Exposer uniquement en interne
 
-  # Frontend
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile.prod
+  # PostgreSQL - Service Database
+  postgres:
+    image: postgis/postgis:15-3.3
     environment:
-      - REACT_APP_API_URL=/api
-      - GENERATE_SOURCEMAP=false
-    networks:
-      - app-network
-    restart: unless-stopped
-    # Exposer uniquement en interne
-
-  # NGINX (Reverse Proxy)
-  nginx:
-    image: nginx:alpine
-    ports:
-      - "80:80"
-      - "443:443"  # Décommentez quand SSL sera configuré
+      POSTGRES_DB: metresurmesure
+      POSTGRES_USER: metresuser
+      POSTGRES_PASSWORD: mpbw idqt fnbt wwbaz
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./frontend/build:/usr/share/nginx/html
-      - ./ssl:/etc/ssl/certs  # Pour les certificats SSL
-    depends_on:
-      - backend
-      - frontend
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - app-network
     restart: unless-stopped
