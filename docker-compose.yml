@@ -1,0 +1,81 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgis/postgis:15-3.3
+    environment:
+      POSTGRES_DB: metresurmesure
+      POSTGRES_USER: metresuser
+      POSTGRES_PASSWORD: metrespwd
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./database/migrations:/docker-entrypoint-initdb.d/migrations
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  backend:
+    build: ./backend
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=metresurmesure
+      - DB_USER=metresuser
+      - DB_PASSWORD=metrespwd
+      - JWT_SECRET=02a1cc8cfba732c5df138a76f718c2c5685994399a0d735c0f45ff0a441bd0abfc2fe67d133c2562733e2b2a622e2bea03c12bef3d133f0de53a2843fcdf9a72
+      - EMAIL_SERVICE=gmail
+      - EMAIL_USER=arvelandrianantoandro@gmail.com
+      - EMAIL_PASS=mpbw idqt fnbt wwba
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"  # Mappage correct du port
+    environment:
+      - REACT_APP_API_URL=http://192.168.1.115:5000 # Utilisez localhost pour le développement
+      - CHOKIDAR_USEPOLLING=true
+      - GENERATE_SOURCEMAP=false
+      - HOST=0.0.0.0  # Force React à écouter sur toutes les interfaces
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - app-network
+    restart: unless-stopped
+    # Utilisez la commande par défaut du Dockerfile
+    # command: npm start -- --host 0.0.0.0
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./ssl:/etc/ssl/certs
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - app-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  app-network:
+    driver: bridge

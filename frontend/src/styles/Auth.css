@@ -1,0 +1,233 @@
+/* Auth.css - Style inspiré d'Alibaba */
+.auth-container {
+  max-width: 400px;
+  margin: 40px auto;
+  padding: 30px;
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e8e8e8;
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.auth-logo {
+  font-size: 2.5rem;
+  color: #F7B500;
+  margin-bottom: 15px;
+}
+
+.auth-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.auth-subtitle {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+/* Formulaire style Alibaba */
+.auth-form .form-group {
+  margin-bottom: 20px;
+}
+
+.auth-form .form-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.auth-form .form-control {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  transition: border-color 0.3s;
+}
+
+.auth-form .form-control:focus {
+  border-color: #F7B500;
+  box-shadow: 0 0 0 2px rgba(255, 106, 0, 0.1);
+  outline: none;
+}
+
+.auth-form .form-check {
+  margin-bottom: 20px;
+}
+
+/* Bouton style Alibaba */
+.auth-btn {
+  width: 100%;
+  padding: 12px;
+  background: #F7B500;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.auth-btn:hover {
+  background: #F7B500;
+}
+
+.auth-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+/* Liens */
+.auth-links {
+  text-align: center;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+.auth-link {
+  color: #F7B500;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.auth-link:hover {
+  text-decoration: underline;
+}
+
+/* Layout spécifique pour l'authentification */
+.auth-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.auth-wrapper {
+  width: 100%;
+  max-width: 1200px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: center;
+}
+
+.auth-hero {
+  text-align: center;
+  padding: 40px;
+}
+
+.auth-hero-content h1 {
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 20px;
+  font-weight: 700;
+}
+
+.auth-hero-content p {
+  font-size: 1.1rem;
+  color: #666;
+  line-height: 1.6;
+}
+
+.auth-features {
+  margin-top: 30px;
+}
+
+.auth-feature {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  color: #666;
+}
+
+.auth-feature i {
+  color: #F7B500;
+  margin-right: 10px;
+  font-size: 1.2rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .auth-wrapper {
+    grid-template-columns: 1fr;
+  }
+  
+  .auth-hero {
+    display: none;
+  }
+  
+  .auth-container {
+    margin: 20px auto;
+    padding: 20px;
+  }
+}
+
+/* Animation */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.auth-container {
+  animation: slideIn 0.5s ease-out;
+}
+
+/* Styles pour le formulaire en étapes */
+.btn-secondary {
+  background: #6c757d;
+}
+
+.btn-secondary:hover {
+  background: #5a6268;
+}
+
+/* Indicateur d'étape */
+.auth-step-indicator {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.auth-step {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 10px;
+  font-weight: bold;
+}
+
+.auth-step.active {
+  background: #F7B500;
+  color: white;
+}
+
+.auth-step-line {
+  width: 40px;
+  height: 2px;
+  background: #ddd;
+  margin: 0 5px;
+  align-self: center;
+}

@@ -1,0 +1,13 @@
+# Utiliser l'image officielle nginx
+FROM nginx:alpine
+
+# Copier les fichiers static du frontend
+COPY frontend/build /usr/share/nginx/html
+
+# Copier la configuration nginx pour Render
+COPY nginx/nginx-render.conf /etc/nginx/nginx.conf
+
+# Exposer le port 80 (Render utilise le port 10000)
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

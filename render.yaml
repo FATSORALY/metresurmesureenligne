@@ -1,0 +1,34 @@
+services:
+  # Service web principal (nginx)
+  - type: web
+    name: metresurmesure-web
+    env: docker
+    dockerfilePath: Dockerfile.render
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+    numInstances: 1
+    healthCheckPath: /
+
+  # Service backend
+  - type: worker
+    name: metresurmesure-backend
+    env: docker
+    dockerfilePath: backend/Dockerfile.render
+    plan: free
+    envVars:
+      - key: production
+        value: production
+      - key: postgresql://metresuser:password@host:5432/metresurmesure
+        fromSecret: postgresql://metresuser:password@host:5432/metresurmesure
+      - key: 02a1cc8cfba732c5df138a76f718c2c5685994399a0d735c0f45ff0a441bd0abfc2fe67d133c2562733e2b2a622e2bea03c12bef3d133f0de53a2843fcdf9a72
+        fromSecret: J02a1cc8cfba732c5df138a76f718c2c5685994399a0d735c0f45ff0a441bd0abfc2fe67d133c2562733e2b2a622e2bea03c12bef3d133f0de53a2843fcdf9a72
+    numInstances: 1
+
+  # Base de données PostgreSQL
+  - type: pgsql
+    name: metresurmesure-db
+    plan: free
+    ipAllowList: []
+    databaseName: metresurmesure
