@@ -56,6 +56,15 @@ app.use('/api/projects', projectRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/ecommerce', ecommerceRoutes);
 app.use('/api/admin', adminRoutes);
+// Health check endpoint pour Render
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'OK', 
+    message: 'Server is running',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV
+  });
+});
 
 
 // Route racine de l'API - DOIT ÊTRE AVANT LES AUTRES ROUTES

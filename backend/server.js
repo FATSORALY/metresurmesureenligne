@@ -12,6 +12,8 @@ require('dotenv').config();
 
 const PORT = process.env.PORT || 5000;
 //const PORT = process.env.PORT || 5000;
+// Configuration pour Render.com
+const HOST = process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost';
 // Servir les fichiers statiques du frontend en production
 if (process.env.NODE_ENV === 'production') {
   const path = require('path');
@@ -27,7 +29,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // Démarrer le serveur
-app.listen(PORT, '0.0.0.0', async () => {
+app.listen(PORT, HOST, async () => {
   console.log(`🚀 Serveur démarré sur le port ${PORT}`);
   console.log(`🌐 Environnement: ${process.env.NODE_ENV}`);
   
@@ -37,6 +39,18 @@ app.listen(PORT, '0.0.0.0', async () => {
     console.log('✅ Connecté à la base de données');
   } catch (error) {
     console.error('❌ Erreur de connexion à la base de données:', error.message);
+  }
+});
+
+// Gestion propre des erreurs de port
+process.on('uncaughtException', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`❌ Le port ${PORT} est déjà utilisé`);
+    console.log('🔄 Tentative de redémarrage sur un port différent...');
+    // Ne pas quitter le processus, laisser Render gérer le redémarrage
+  } else {
+    console.error('❌ Erreur non gérée:', err);
+    process.exit(1);
   }
 });
 

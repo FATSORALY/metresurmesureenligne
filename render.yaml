@@ -9,7 +9,7 @@ services:
       - key: NODE_ENV
         value: production
       - key: PORT
-        value: 5000
+        value: 10000  # Render utilise le port 10000
       - key: JWT_SECRET
         generateValue: true
       - key: FRONTEND_URL
@@ -17,16 +17,9 @@ services:
       - key: BACKEND_URL
         value: https://metresurmesureenligne.onrender.com
 
-    # Configuration de la base de données
-    databases:
-      - name: metresurmesure-db
-        databaseName: metresurmesure
-        user: metresuser
-        plan: free
-
-    # Health check
+    # Health check - important pour Render
     healthCheckPath: /api/health
-    initialDeployHook: echo "Déploiement initial en cours..."
+    healthCheckTimeout: 120
 
   # Service de base de données PostgreSQL
   - type: pgsql
@@ -35,10 +28,3 @@ services:
     ipAllowList: []
     databaseName: metresurmesure
     user: metresuser
-
-# Redirections
-routes:
-  - type: redirect
-    source: /api/*
-    destination: https://metresurmesureenligne.onrender.com/api/:splat
-    status: 301
