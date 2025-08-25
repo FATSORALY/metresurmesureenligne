@@ -22,6 +22,8 @@ if (process.env.NODE_ENV === 'production') {
   // Servir les fichiers statiques
   app.use(express.static(path.join(__dirname, '../frontend/build')));
 
+  app.use('/api', require('./routes')); // ito
+
   // Pour toutes les autres routes, renvoyer index.html
   app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
@@ -103,7 +105,7 @@ app.use(passport.initialize());
 
 
 // Routes
-app.use('/api', require('./routes')); // ito
+
 app.use('/api/auth', authRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/chat', chatRoutes);
