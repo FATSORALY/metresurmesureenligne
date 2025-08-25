@@ -16,11 +16,12 @@ const ecommerceRoutes = require('./routes/ecommerce');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const HOST = process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost';
 
 // Middleware de base
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: process.env.NODE_ENV === 'production' 
+    ? 'https://metresurmesureenligne.onrender.com' 
+    : 'http://localhost:3000',
   credentials: true
 }));
 app.use(express.json());
@@ -63,11 +64,21 @@ app.get('/api/health', (req, res) => {
 
 // Configuration pour la production - Servir les fichiers statiques
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../frontend/build')));
+  // Chemin absolu vers le dossier build
+  const buildPath = path.join(__dirname, '../frontend/build');
+  console.log('Serving static files from:', buildPath);
+  
+  // Servir les fichiers statiques
+  app.use(express.static(buildPath));
   
   // Pour toutes les autres routes, renvoyer index.html
   app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
+    res.sendFile(path.join(buildPath, 'index.html'));
+  });
+} else {
+  // En développement, on peut avoir une route racine simple
+  app.get('/', (req, res) => {
+    res.send('Server is running in development mode. Frontend should be served separately.');
   });
 }
 
@@ -75,7 +86,9 @@ if (process.env.NODE_ENV === 'production') {
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    origin: process.env.NODE_ENV === 'production' 
+      ? 'https://metresurmesureenligne.onrender.com' 
+      : "http://localhost:3000",
     methods: ["GET", "POST"]
   }
 });
@@ -99,8 +112,8 @@ io.on('connection', (socket) => {
 });
 
 // Démarrage du serveur
-server.listen(PORT, '0.0.0.0' , async () => {
-  console.log(`🚀 Serveur démarré sur ${HOST}:${PORT}`);
+server.listen(PORT, '0.0.0.0', async () => {
+  console.log(`🚀 Serveur démarré sur le port ${PORT}`);
   console.log(`🌐 Environnement: ${process.env.NODE_ENV || 'development'}`);
   
   try {
