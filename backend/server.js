@@ -99,7 +99,7 @@ io.on('connection', (socket) => {
 });
 
 // Démarrage du serveur
-server.listen(PORT, HOST, async () => {
+server.listen(PORT, '0.0.0.0' , async () => {
   console.log(`🚀 Serveur démarré sur ${HOST}:${PORT}`);
   console.log(`🌐 Environnement: ${process.env.NODE_ENV || 'development'}`);
   
