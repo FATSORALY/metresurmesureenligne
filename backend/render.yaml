@@ -1,0 +1,42 @@
+services:
+  - type: web
+    name: metresurmesure-backend
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DB_HOST
+        fromDatabase:
+          name: metresurmesure-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: metresurmesure-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: metresurmesure-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: metresurmesure-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: metresurmesure-db
+          property: password
+      - key: JWT_SECRET
+        generateValue: true
+      - key: FRONTEND_URL
+        value: https://metresurmesure-frontend.onrender.com
+
+databases:
+  - name: metresurmesure-db
+    plan: free
+    databaseName: metresurmesure
+    user: metresuser

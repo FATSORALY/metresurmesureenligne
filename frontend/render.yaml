@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: metresurmesure-frontend
+    env: static
+    buildCommand: npm run build
+    staticPublishPath: ./build
+    envVars:
+      - key: REACT_APP_API_URL
+        value: https://metresurmesure-backend.onrender.com
