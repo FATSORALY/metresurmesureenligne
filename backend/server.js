@@ -9,7 +9,36 @@ const app = require('./app');
 const path = require('path'); // ito
 require('dotenv').config();
 
+
+const PORT = process.env.PORT || 5000;
 //const PORT = process.env.PORT || 5000;
+// Servir les fichiers statiques du frontend en production
+if (process.env.NODE_ENV === 'production') {
+  const path = require('path');
+  const express = require('express');
+  
+  // Servir les fichiers statiques
+  app.use(express.static(path.join(__dirname, '../frontend/build')));
+
+  // Pour toutes les autres routes, renvoyer index.html
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
+  });
+}
+
+// Démarrer le serveur
+app.listen(PORT, '0.0.0.0', async () => {
+  console.log(`🚀 Serveur démarré sur le port ${PORT}`);
+  console.log(`🌐 Environnement: ${process.env.NODE_ENV}`);
+  
+  try {
+    // Tester la connexion à la base de données
+    await db.query('SELECT NOW()');
+    console.log('✅ Connecté à la base de données');
+  } catch (error) {
+    console.error('❌ Erreur de connexion à la base de données:', error.message);
+  }
+});
 
 // Routes
 const authRoutes = require('./routes/auth');
@@ -60,6 +89,7 @@ app.use(passport.initialize());
 
 
 // Routes
+app.use('/api', require('./routes')); // ito
 app.use('/api/auth', authRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/chat', chatRoutes);
@@ -87,16 +117,9 @@ io.on('connection', (socket) => {
 });
 
 
-// Servir les fichiers static en production
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../frontend/build')));
-  
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
-  });
-}
 
-const PORT = process.env.PORT || 5000;
+
+
 
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

@@ -1,0 +1,42 @@
+# Dockerfile
+FROM node:16-alpine as backend-build
+
+WORKDIR /app/backend
+COPY backend/package*.json ./
+RUN npm install --include=dev  # ← Ajouter --include=dev pour installer les devDependencies
+COPY backend/ .
+RUN npm run build
+
+FROM node:16-alpine as frontend-build
+
+WORKDIR /app/frontend
+COPY frontend/package*.json ./
+RUN npm install
+COPY frontend/ .
+RUN npm run build
+
+# Image finale
+FROM node:16-alpine
+
+WORKDIR /app
+
+# Installer PostgreSQL client et autres dépendances
+RUN apk add --no-cache postgresql-client
+
+# Copier le backend (seulement les fichiers de production)
+COPY --from=backend-build /app/backend/dist /app/backend/dist
+COPY --from=backend-build /app/backend/package*.json /app/backend/
+COPY --from=frontend-build /app/frontend/build /app/frontend/build
+
+# Installer les dépendances de production du backend
+WORKDIR /app/backend
+RUN npm install --production  # ← Seulement les dépendances de production
+
+# Exposer le port
+EXPOSE 5000
+
+# Script de démarrage
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh
+
+CMD ["/app/start.sh"]

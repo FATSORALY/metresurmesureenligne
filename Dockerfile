@@ -1,38 +1,41 @@
-# Dockerfile.render
-FROM node:18-alpine as backend-build
+# Dockerfile
+FROM node:16-alpine as backend-build
+
 WORKDIR /app/backend
 COPY backend/package*.json ./
 RUN npm install
 COPY backend/ .
 RUN npm run build
 
-FROM node:18-alpine as frontend-build
+FROM node:16-alpine as frontend-build
+
 WORKDIR /app/frontend
 COPY frontend/package*.json ./
 RUN npm install
 COPY frontend/ .
 RUN npm run build
 
-FROM node:18-alpine as production
+# Image finale
+FROM node:16-alpine
+
 WORKDIR /app
 
-# Installer serve pour servir le frontend
-RUN npm install -g serve
+# Installer PostgreSQL client et autres dépendances
+RUN apk add --no-cache postgresql-client
 
 # Copier le backend
-COPY --from=backend-build /app/backend/dist ./backend/dist
-COPY --from=backend-build /app/backend/package*.json ./backend/
-COPY --from=backend-build /app/backend/node_modules ./backend/node_modules
+COPY --from=backend-build /app/backend /app/backend
+COPY --from=frontend-build /app/frontend/build /app/frontend/build
 
-# Copier le frontend
-COPY --from=frontend-build /app/frontend/build ./frontend-build
-
-# Copier les scripts de démarrage
-COPY scripts/ ./scripts/
-RUN chmod +x ./scripts/start.sh
+# Installer les dépendances du backend
+WORKDIR /app/backend
+RUN npm install --production
 
 # Exposer le port
 EXPOSE 5000
 
-# Démarrer l'application
-CMD ["./scripts/start.sh"]
+# Script de démarrage
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh
+
+CMD ["/app/start.sh"]
