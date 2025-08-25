@@ -1,17 +1,38 @@
-# Pour un projet Node.js
-FROM node:18-alpine
-WORKDIR /app
-COPY . .
+# Dockerfile.render
+FROM node:18-alpine as backend-build
+WORKDIR /app/backend
+COPY backend/package*.json ./
 RUN npm install
-CMD ["npm", "start"]
+COPY backend/ .
+RUN npm run build
 
-# OU pour un projet Python
-FROM python:3.9-slim
+FROM node:18-alpine as frontend-build
+WORKDIR /app/frontend
+COPY frontend/package*.json ./
+RUN npm install
+COPY frontend/ .
+RUN npm run build
+
+FROM node:18-alpine as production
 WORKDIR /app
-COPY . .
-RUN pip install -r requirements.txt
-CMD ["python", "app.py"]
 
-# OU pour un projet static (HTML/CSS/JS)
-FROM nginx:alpine
-COPY . /usr/share/nginx/html
+# Installer serve pour servir le frontend
+RUN npm install -g serve
+
+# Copier le backend
+COPY --from=backend-build /app/backend/dist ./backend/dist
+COPY --from=backend-build /app/backend/package*.json ./backend/
+COPY --from=backend-build /app/backend/node_modules ./backend/node_modules
+
+# Copier le frontend
+COPY --from=frontend-build /app/frontend/build ./frontend-build
+
+# Copier les scripts de démarrage
+COPY scripts/ ./scripts/
+RUN chmod +x ./scripts/start.sh
+
+# Exposer le port
+EXPOSE 5000
+
+# Démarrer l'application
+CMD ["./scripts/start.sh"]

@@ -1,32 +1,29 @@
-# render.yaml à la racine du projet
+# render.yaml
 services:
+  # Service principal (backend + frontend)
   - type: web
-    name: metresurmesure-backend
-    env: node
+    name: metresurmesure-app
+    env: docker
+    dockerfilePath: ./Dockerfile.render
     plan: free
-    rootDir: backend
-    buildCommand: npm install
-    startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
-      - key: PORT
-        value: 10000
+      - key: DATABASE_URL
+        fromSecret: DATABASE_URL
       - key: JWT_SECRET
-        generateValue: true
+        fromSecret: JWT_SECRET
+      - key: FRONTEND_URL
+        value: https://metresurmesureenligne.onrender.com
+      - key: BACKEND_URL
+        value: https://metresurmesureenligne.onrender.com
+    domains:
+      - metresurmesureenligne.onrender.com
 
-  - type: web
-    name: metresurmesure-frontend
-    env: static
-    rootDir: frontend
-    buildCommand: npm run build
-    staticPublishPath: ./build
-    envVars:
-      - key: REACT_APP_API_URL
-        value: https://metresurmesure-backend.onrender.com
-
-databases:
-  - name: metresurmesure-db
+  # Base de données PostgreSQL
+  - type: pg
+    name: metresurmesure-db
     plan: free
+    ipAllowList: []
     databaseName: metresurmesure
     user: metresuser
