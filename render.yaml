@@ -1,0 +1,32 @@
+# render.yaml à la racine du projet
+services:
+  - type: web
+    name: metresurmesure-backend
+    env: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: JWT_SECRET
+        generateValue: true
+
+  - type: web
+    name: metresurmesure-frontend
+    env: static
+    rootDir: frontend
+    buildCommand: npm run build
+    staticPublishPath: ./build
+    envVars:
+      - key: REACT_APP_API_URL
+        value: https://metresurmesure-backend.onrender.com
+
+databases:
+  - name: metresurmesure-db
+    plan: free
+    databaseName: metresurmesure
+    user: metresuser
