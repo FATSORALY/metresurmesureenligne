@@ -5,10 +5,10 @@
   "main": "index.js",
   "scripts": {
     "start": "react-scripts start",
-    "build": "cd frontend && npm install && npm run build",
+    "build": "GENERATE_SOURCEMAP=false react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "build:render": "GENERATE_SOURCEMAP=false npm run build"
+    "build:render": "npm install && npm run build"
   },
   "proxy": "https://metresurmesure-backend.onrender.com",
   "dependencies": {
