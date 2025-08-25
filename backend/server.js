@@ -29,7 +29,7 @@ app.use(express.urlencoded({ extended: true }));
 // Configuration Passport
 const opts = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-  secretOrKey: process.env.JWT_SECRET || 'your-secret-key'
+  secretOrKey: process.env.JWT_SECRET || 'your-fallback-secret-key'
 };
 
 passport.use(new JwtStrategy(opts, async (jwt_payload, done) => {
@@ -52,20 +52,19 @@ app.use('/api/projects', projectRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/ecommerce', ecommerceRoutes);
 
-// Configuration pour la production
+// Route de santé pour vérifier le statut du serveur
+app.get('/api/health', (req, res) => {
+  res.json({ 
+    status: 'OK', 
+    message: 'Server is running', 
+    timestamp: new Date().toISOString() 
+  });
+});
+
+// Configuration pour la production - Servir les fichiers statiques
 if (process.env.NODE_ENV === 'production') {
-  // Servir les fichiers statiques du frontend
   app.use(express.static(path.join(__dirname, '../frontend/build')));
   
-  // Route de santé pour vérifier le statut du serveur
-  app.get('/api/health', (req, res) => {
-    res.json({ 
-      status: 'OK', 
-      message: 'Server is running', 
-      timestamp: new Date().toISOString() 
-    });
-  });
-
   // Pour toutes les autres routes, renvoyer index.html
   app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
@@ -102,7 +101,7 @@ io.on('connection', (socket) => {
 // Démarrage du serveur
 server.listen(PORT, HOST, async () => {
   console.log(`🚀 Serveur démarré sur ${HOST}:${PORT}`);
-  console.log(`🌐 Environnement: ${process.env.NODE_ENV}`);
+  console.log(`🌐 Environnement: ${process.env.NODE_ENV || 'development'}`);
   
   try {
     await db.query('SELECT NOW()');
