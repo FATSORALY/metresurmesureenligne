@@ -4,6 +4,13 @@
     "buildCommand": "docker build -t myapp .",
     "runCommand": "docker run -p 5000:5000 myapp"
   },
+  "scripts": {
+    "deploy": "railway up",
+    "env:set": "railway variables add",
+    "env:list": "railway variables",
+    "logs": "railway logs",
+    "open": "railway open"
+  },
   "deploy": {
     "startCommand": "npm start",
     "restartPolicyType": "ON_FAILURE",
