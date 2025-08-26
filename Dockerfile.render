@@ -19,9 +19,7 @@ RUN npm install --production
 # Exposer le port (Render utilise le port 10000)
 EXPOSE 10000
 
-# Script de démarrage
-COPY start.sh /app/start.sh
-RUN chmod +x /app/start.sh
+
 
 # Utiliser l'utilisateur non-root pour la sécurité
 USER node

@@ -34,8 +34,6 @@ RUN npm install --production
 # Exposer le port
 EXPOSE 5000
 
-# Script de démarrage
-COPY start.sh /app/start.sh
-RUN chmod +x /app/start.sh
+
 
 CMD ["/app/start.sh"]

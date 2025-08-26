@@ -31,10 +31,8 @@
     
   },
   "devDependencies": {
-    "nodemon": "^2.0.20",
-    "@babel/cli": "^7.22.0",
-    "@babel/core": "^7.22.0",
-    "@babel/preset-env": "^7.22.0"
+    "nodemon": "^2.0.20"
+    
   },
   "engines": {
     "node": ">=16.0.0"
