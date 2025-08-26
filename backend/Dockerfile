@@ -1,13 +1,19 @@
-# Backend/Dockerfile
-FROM node:16-alpine
+FROM node:18-alpine
 
 WORKDIR /app
 
+# Copier les fichiers de dépendances
 COPY package*.json ./
-RUN npm install
+COPY .npmrc ./
 
+# Installer les dépendances
+RUN npm ci --only=production
+
+# Copier le code source
 COPY . .
 
+# Exposer le port
 EXPOSE 5000
 
-CMD ["npm", "run", "dev"]
+# Démarrer l'application
+CMD ["npm", "start"]
